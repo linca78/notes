@@ -1,91 +1,149 @@
-function createElement(tag, props, ...children) {
-    const element = document.createElement(tag);
+let addButton = document.getElementById('add');
+let inputTask = document.getElementById('new-task');
+let unfinishedTasks = document.getElementById('unfinished-tasks');
+let finishedTasks = document.getElementById('finished-tasks');
 
-    Object.keys(props).forEach(key => element[key] = props[key]);
 
-    if (children.length > 0) {
-        children.forEach(child => {
-            if (typeof child === 'string') {
-                child = document.createTextNode(child);
-            }
+function createNewElement(task, finished) {
+    let listItem = document.createElement('li');
+    let checkbox = document.createElement('button');
 
-            element.appendChild(child);
-        });
+    if(finished){
+        checkbox.className = "material-icons checkbox";
+        checkbox.innerHTML = "<i class='material-icons'>check_box</i>";
+    }else {
+        checkbox.className = "material-icons checkbox";
+        checkbox.innerHTML = "<i class='material-icons'>check_box_outline_blank</i>";
     }
 
-    return element;
-}
 
-function createTodoItem(title) {
-    const checkbox = createElement('input', { type: 'checkbox', className: 'checkbox' });
-    const label = createElement('label', { className: 'title' }, title);
-    const editInput = createElement('input', { type: 'text', className: 'textfield' });
-    const editButton = createElement('button', { className: 'edit' }, 'Изменить');
-    const deleteButton = createElement('button', { className: 'delete' }, 'Удалить');
-    const listItem = createElement('li', { className: 'todo-item' }, checkbox, label, editInput, editButton, deleteButton);
+    let label = document.createElement('label');
+    label.innerText = task;
+    let input = document.createElement('input');
+    input.type = "text";
+    let editButton = document.createElement('button');
+    editButton.className = "material-icons edit";
+    editButton.innerHTML = "<i class='material-icons'>edit</i>";
+    let deleteButton = document.createElement('button');
+    deleteButton.className = "material-icons delete";
+    deleteButton.innerHTML = "<i class='material-icons'>delete</i>";
 
-    bindEvents(listItem);
+    listItem.appendChild(checkbox);
+    listItem.appendChild(label);
+    listItem.appendChild(input);
+    listItem.appendChild(deleteButton);
+    listItem.appendChild(editButton);
 
     return listItem;
 }
 
-function bindEvents(todoItem) {
-    const checkbox = todoItem.querySelector('.checkbox');
-    const editButton = todoItem.querySelector('button.edit');
-    const deleteButton = todoItem.querySelector('button.delete');
-
-    checkbox.addEventListener('change', toggleTodoItem);
-    editButton.addEventListener('click', editTodoItem);
-    deleteButton.addEventListener('click', deleteTodoItem);
-}
-
-function addTodoItem(event) {
-    event.preventDefault();
-
-    if (addInput.value === '') {
-        return alert('Необходимо ввести название задачи.');
+function addTask() {
+    if (inputTask.value) {
+        let listItem = createNewElement(inputTask.value, false);
+        unfinishedTasks.appendChild(listItem);
+        bindTaskEvents(listItem, finishTask)
+        inputTask.value = "";
     }
+    save();
+}
+addButton.onclick = addTask;
 
-    const todoItem = createTodoItem(addInput.value);
-    todoList.appendChild(todoItem);
-    addInput.value = '';
+function deleteTask() {
+    let listItem = this.parentNode;
+    let ul = listItem.parentNode;
+    ul.removeChild(listItem);
+    save();
 }
 
-function toggleTodoItem() {
-    const listItem = this.parentNode;
-    listItem.classList.toggle('completed');
-}
+function editTask() {
+    console.log(2);
+    let editButton = this;
+    let listItem = this.parentNode;
+    let label = listItem.querySelector('label');
+    let input = listItem.querySelector('input[type=text]');
 
-function editTodoItem() {
-    const listItem = this.parentNode;
-    const title = listItem.querySelector('.title');
-    const editInput = listItem.querySelector('.textfield');
-    const isEditing = listItem.classList.contains('editing');
+    let containsClass = listItem.classList.contains('editMode');
 
-    if (isEditing) {
-        title.innerText = editInput.value;
-        this.innerText = 'Изменить';
+    if (containsClass) {
+        label.innerText = input.value;
+        editButton.className = "material-icons edit";
+        editButton.innerHTML = "<i class='material-icons'>edit</i>";
+        save();
     } else {
-        editInput.value = title.innerText;
-        this.innerText = 'Сохранить';
+        input.value = label.innerText;
+        editButton.className = "material-icons save";
+        editButton.innerHTML = "<i class='material-icons'>save</i>";
+
+    }
+    listItem.classList.toggle('editMode');
+}
+
+function finishTask() {
+    let listItem = this.parentNode;
+    let checkbox = listItem.querySelector('button.checkbox');
+    checkbox.className = "material-icons checkbox";
+    checkbox.innerHTML = "<i class='material-icons'>check_box</i>";
+    finishedTasks.appendChild(listItem);
+    bindTaskEvents(listItem, unfinishTask);
+    save();
+}
+
+function unfinishTask() {
+    let listItem = this.parentNode;
+    let checkbox = listItem.querySelector('button.checkbox');
+    checkbox.className = "material-icons checkbox";
+    checkbox.innerHTML = "<i class='material-icons'>check_box_outline_blank</i>";
+
+    unfinishedTasks.appendChild(listItem);
+    bindTaskEvents(listItem, finishTask)
+    save();
+}
+
+function bindTaskEvents(listItem, checkboxEvent) {
+    let checkbox = listItem.querySelector('button.checkbox');
+    let editButton = listItem.querySelector('button.edit');
+    let deleteButton = listItem.querySelector('button.delete');
+
+    checkbox.onclick = checkboxEvent;
+    editButton.onclick = editTask;
+    deleteButton.onclick = deleteTask;
+
+}
+function save() {
+
+    let unfinishedTasksArr = [];
+    for (let i = 0; i < unfinishedTasks.children.length; i++) {
+        unfinishedTasksArr.push(unfinishedTasks.children[i].getElementsByTagName('label')[0].innerText);
     }
 
-    listItem.classList.toggle('editing');
+    let finishedTasksArr = [];
+    for (let i = 0; i < finishedTasks.children.length; i++) {
+        finishedTasksArr.push(finishedTasks.children[i].getElementsByTagName('label')[0].innerText);
+    }
+
+    localStorage.removeItem('todo');
+    localStorage.setItem('todo', JSON.stringify({
+        unfinishedTasks: unfinishedTasksArr,
+        finishedTasks: finishedTasksArr
+    }));
+
 }
 
-function deleteTodoItem() {
-    const listItem = this.parentNode;
-    todoList.removeChild(listItem);
+function load(){
+    return JSON.parse(localStorage.getItem('todo'));
 }
 
-const todoForm = document.getElementById('todo-form');
-const addInput = document.getElementById('add-input');
-const todoList = document.getElementById('todo-list');
-const todoItems = document.querySelectorAll('.todo-item');
+let data=load();
 
-function main() {
-    todoForm.addEventListener('submit', addTodoItem);
-    todoItems.forEach(item => bindEvents(item));
+for(let i=0; i<data.unfinishedTasks.length;i++){
+    let listItem=createNewElement(data.unfinishedTasks[i], false);
+    unfinishedTasks.appendChild(listItem);
+    bindTaskEvents(listItem, finishTask);
 }
 
-main();
+for(let i=0; i<data.finishedTasks.length; i++){
+    let listItem=createNewElement(data.finishedTasks[i], true);
+    finishedTasks.appendChild(listItem);
+    bindTaskEvents(listItem, unfinishTask);
+}
+

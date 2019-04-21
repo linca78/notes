@@ -3,44 +3,29 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
-    <title>Todo.js</title>
+    <title>Мои заметки</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="css/main.css">
 </head>
 
 <body>
 <div class="container">
-    <main id="app">
-        <div class="row">
-            <div class="col">
-                <header class="text-center">
-                    <h1 class="text-white text-uppercase">Заметки</h1>
-                </header>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <ul id="todo-list">
-                    <li class="todo-item">
-                        <input class="checkbox" type="checkbox">
-                        <input class="title" type="text" placeholder="ведите текст заметки"></input>
-                        <input class="textfield" type="text">
-                        <button class="edit">Изменить</button>
-                        <button class="delete">Удалить</button>
-                    </li>
-                </ul>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <form id="todo-form">
-                    <input id="add-input" type="text" placeholder="ведите текст">
-                    <button id="add-button" type="submit">Добавить</button>
-                </form>
-            </div>
-        </div>
-    </main>
+     <div class="row">
+         <div class="col-8 offset-2">
+             <div class="wrapper">
+                 <h3>Добавить заметку</h3>
+                 <input id="new-task" type="text">
+                 <button id="add">Добавить</button>
+                 <h3>Список заметок</h3>
+                 <ul id="unfinished-tasks">
+                 </ul>
+                 <h3>Завершенные дела</h3>
+                 <ul id="finished-tasks">
+                 </ul>
+             </div>
+         </div>
+     </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
