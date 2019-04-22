@@ -121,8 +121,8 @@ function save() {
         finishedTasksArr.push(finishedTasks.children[i].getElementsByTagName('label')[0].innerText);
     }
 
-    localStorage.removeItem('todo');
-    localStorage.setItem('todo', JSON.stringify({
+    localStorage.removeItem('notes');
+    localStorage.setItem('notes', JSON.stringify({
         unfinishedTasks: unfinishedTasksArr,
         finishedTasks: finishedTasksArr
     }));
@@ -130,7 +130,7 @@ function save() {
 }
 
 function load(){
-    return JSON.parse(localStorage.getItem('todo'));
+    return JSON.parse(localStorage.getItem('notes'));
 }
 
 let data=load();
